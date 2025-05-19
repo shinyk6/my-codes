@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="morningGreet" class="com.sec03.MorningGreet"/>
+  	<bean id="greetService" class="com.sec03.GreetService" scope="prototype">
+  		<property name="greet" ref="morningGreet"></property> <!-- setGreet라는 setter메소드를 찾음-> 매개변수가 ref의 morningGreet선조인 인터페이스 타입을 찾아감 -->
+  	</bean>
+  	
+  
+  	
+</beans>

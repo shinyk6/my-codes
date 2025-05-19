@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>css demo</title>
+    <style>
+      p {
+        color: blue;
+        width: 200px;
+        font-size: 14px;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  </head>
+  <body>
+    <p>Just roll the mouse over me.</p>
+    <p>Or me to see a color change.</p>
+    <script>
+      /*
+        //마우스 커서 올리면 빨간색, 마우스 커서 나가면, 마우스 클릭하면 노란색
+        //case 1: 단계적 이벤트를 on("event_type", function());
+        // $ -> ${document}.ready(function(){....});
+
+        /*
+
+        셀렉터 선택
+          $("#id"), ${"tag"}, ${"*"} : 모든 요소 선택
+          ${"parent > child"} : 특정 부모의 바로 아래 자식
+          ${"parent  child"} : 특정 부모의 모든 자식
+          ${"element:first"} ,,, 기타 연산자
+
+
+        */
+
+      $("p") //window에 바로 접근
+        .on("mouseover", function () {
+          $(this).css("color", "red");
+        })
+        .on("mouseout", function () {
+          $(this).css("color", "blue");
+        })
+        .on("click", function () {
+          $(this).css("color", "yellow");
+        });
+
+      //case 2: 태그.이벤트함수(function(){}, ,,,);
+      //hover(), click()
+      $("p")
+        .hover(
+          function () {
+            $(this).css("color", "red");
+          },
+          function () {
+            $(this).css("color", "blue");
+          }
+        )
+        .click(function () {
+          $(this).css("color", "yellow");
+        });
+    </script>
+  </body>
+</html>

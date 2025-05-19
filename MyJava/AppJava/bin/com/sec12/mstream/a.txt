@@ -1,0 +1,8 @@
+ package com.sec12.mstream;
+
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.stream.Stream;
+import java.nio.file.Path; //파일 경로 하나
+import java.nio.file.Paths; //os가 가지는 여러 경로

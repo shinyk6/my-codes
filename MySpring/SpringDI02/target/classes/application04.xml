@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+	<bean id="myCollection" class="com.sec04.MyCollection"> <!-- 구체 클래스를 bean 객체로 만들기 -->
+		
+		<!-- 1. List-->
+		<property name="items">
+			<list>
+				<value>Item A</value>
+				<value>Item B</value>
+				<value>Item C</value>				
+			</list>
+		</property>
+		
+	<!-- 2. Array -->
+		<property name="myarray">
+			<array>
+				<value>Item A array</value>
+				<value>Item B array</value>
+				<value>Item C array</value>				
+			</array>
+		</property>
+	
+	<!-- 3. set -->
+		<property name="myset">
+			<set>
+				<value>Item A0set</value>
+				<value>Item B1set</value>
+				<value>Item C2set</value>				
+			</set>
+		</property>
+	
+	<!-- 4. map -->
+		<property name="mymap">
+			<map>
+				<entry key="key1" value="Item A map"></entry>
+				<entry key="key2" value="Item B map"></entry>
+				<entry key="key3" value="Item C map"></entry>		
+			</map>
+		</property>	
+		
+		<property name="myaddr">
+			<map>
+				<entry key="person1" value-ref="my01"></entry>
+			    <entry key="person2" value-ref="my02"></entry>
+			</map>
+		</property>
+	</bean>
+		
+	<!-- 5. com.sec1.MyAddress객체를 Map으로-->
+	<bean id="my01" class="com.sec01.MyAddress"> <!-- 이렇게 일일이 작성하지 않고 이미 만들어 둔 xml파일을 import해서 사용해도 됨-->
+		<constructor-arg value="홍길동"  index="0"/>
+		<constructor-arg value="서울시"  index="1"/>	
+		<constructor-arg value="02-000-0000"  index="2"/>		
+	</bean>
+	
+	
+	<bean id="my02" class="com.sec01.MyAddress">
+		<constructor-arg value="정길동"  index="0"/>
+		<constructor-arg value="제주도"  index="1"/>	
+		<constructor-arg value="00-000-0000"  index="2"/>		
+	</bean>	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</beans>

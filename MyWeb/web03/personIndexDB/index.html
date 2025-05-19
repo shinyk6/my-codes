@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>IndexedDB Person App</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+
+      input,
+      button {
+        margin: 5px;
+      }
+
+      li {
+        margin: 5px 0;
+      }
+
+      .delete-btn {
+        color: red;
+        margin-left: 10px;
+      }
+
+      .edit-btn {
+        color: green;
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>IndexedDB 사용자 관리</h2>
+    <input type="text" id="name" placeholder="이름" />
+    <input type="text" id="address" placeholder="주소" />
+    <input type="text" id="phone" placeholder="전화번호" />
+    <button onclick="addOrUpdatePerson()">추가/수정</button>
+    <button onclick="clearForm()">초기화</button>
+
+    <h3>사용자 목록</h3>
+    <ul id="personList"></ul>
+
+    <script type="module">
+      //type="module" : 현재 파일에만 영역을 제한 / 모듈을 사용하겠다. / 전역 등록 안됨 / import, export가능
+      //해당 이벤트 등록 할 때 영역을 지정 - window. 이라고 전역객체 명시해줘야함
+      import { Person } from "./person.js";
+
+      let db;
+      let editingName = null;
+
+      const openDB = () => {
+        const request = indexedDB.open("PersonDB", 1); // open : DB가 있으면 호출하고, 없으면 새로 만듦
+
+        //처음 디비를 만들 때 people로  ObjectStore를 만들고 {keypath: "tname"} 설정 = PK
+        request.onupgradeneeded = function (e) {
+          db = e.target.result;
+          db.createObjectStore("people", { keyPath: "tname" });
+        };
+
+        //성공적으로 open했을 때
+        request.onsuccess = function (e) {
+          db = e.target.result; //DB 객체를 리턴
+          renderList();
+        };
+      };
+
+      // DB에 저장되어있는 모든 목록을 화면에 출력
+      const renderList = () => {
+        const tx = db.transaction("people", "readonly");
+        const store = tx.objectStore("people");
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          const ul = document.getElementById("personList");
+          ul.innerHTML = "";
+          request.result.forEach((p) => {
+            const person = new Person(p.tname, p.taddress, p.phone);
+            const li = document.createElement("li");
+            li.textContent = person.toString();
+
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "수정";
+            editBtn.className = "edit-btn";
+            editBtn.onclick = () => {
+              document.getElementById("name").value = p.tname;
+              document.getElementById("address").value = p.taddress;
+              document.getElementById("phone").value = p.phone;
+              editingName = p.tname;
+            };
+
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "삭제";
+            delBtn.className = "delete-btn";
+            delBtn.onclick = () => {
+              const tx2 = db.transaction("people", "readwrite");
+              tx2.objectStore("people").delete(p.tname).onsuccess = renderList;
+            };
+
+            li.appendChild(editBtn);
+            li.appendChild(delBtn);
+            ul.appendChild(li);
+          });
+        };
+      };
+
+      window.addOrUpdatePerson = () => {
+        //script type을 module로 선언해서 모듈스크립트이기때문에 window를 붙여줘야함.
+        const name = document.getElementById("name").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        if (!name || !address || !phone) return alert("모든 필드를 입력하세요");
+
+        const p = new Person(name, address, phone);
+        const tx = db.transaction("people", "readwrite");
+        tx.objectStore("people").put(p).onsuccess = () => {
+          renderList();
+          clearForm();
+        };
+      };
+
+      window.clearForm = () => {
+        document.getElementById("name").value = "";
+        document.getElementById("address").value = "";
+        document.getElementById("phone").value = "";
+        editingName = null;
+      };
+
+      openDB();
+    </script>
+  </body>
+</html>

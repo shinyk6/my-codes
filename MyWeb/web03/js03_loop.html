@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>반복문</title>
+  </head>
+  <body>
+    <button onclick="Test()">확인01</button>
+    <button id="mybutton">확인02</button>
+    <div id="result"></div>
+
+    <script>
+      const resultDiv = document.getElementById("result");
+      const mybutton = document.getElementById("mybutton");
+      function Test() {
+        resultDiv.innerHTML = "";
+        for (let i = 1; i <= 5; i++) {
+          resultDiv.innerHTML += "반복 " + i + "<br>";
+        }
+      }
+      mybutton.addEventListener("click", Test); //버튼을 클릭했을 때 Test라는 함수를 이벤트 리스너로 등록했다.
+
+      //초기 로딩 시 페이지가 실행되면서 즉시 반복문을 실행 하고 싶다면
+      //window.onload = Test;
+    </script>
+  </body>
+</html>

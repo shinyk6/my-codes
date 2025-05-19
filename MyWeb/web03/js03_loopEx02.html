@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>반복문</title>
+    <style>
+      body {
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+      }
+      .result {
+        margin: 20px;
+        padding: 10px;
+        background-color: aquamarine;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>숫자를 입력하고 버튼을 클릭해보자</h2>
+    <input type="number" id="number" placeholder="숫자입력하세요" />
+    <button onclick="runloop()">클릭</button>
+
+    <h3>for 반복문 결과</h3>
+    <div id="forResult" class="result"></div>
+
+    <h3>while 반복문 결과</h3>
+    <div id="whileResult" class="result"></div>
+
+    <script>
+      function runloop() {
+        const num = Number(document.getElementById("number").value); //String으로 가져오기에 수치로 형변환
+
+        if (isNaN(num) || num < 0) {
+          //vaildation
+          alert("숫자 입력 잘해봐");
+          return;
+        }
+
+        // for 반복
+        let forOutput = "";
+        for (let i = 1; i <= num; i++) {
+          forOutput += i + " ";
+        }
+
+        // while 반복
+        let whilOutput = "";
+        let j = 0;
+        while (j < num) {
+          whilOutput += j + " ";
+          j++;
+        }
+
+        //document.getElementById("forResult").textContent = forOutput //화면에 뿌리기 textContent
+        Output("forResult", forOutput);
+
+        //document.getElementById("whileResult").textContent = whilOutput //화면에 뿌리기 textContent
+        Output("whileResult", whileOutput);
+      }
+
+      function Output(eId, text) {
+        const target = document.getElementById(eId);
+        target.textContent = " ";
+
+        const chars = text.trim().split(" "); //글자 하나씩 분철 - 배열형태로 저장됨 - length를 가짐
+        let i = 0;
+
+        const interval = setInterval(() => {
+          if (i < chars.length) {
+            target.textContent += chars[i] + " ";
+            i++;
+          } else {
+            clearInterval(interval);
+          }
+        }, 500);
+      }
+    </script>
+  </body>
+</html>

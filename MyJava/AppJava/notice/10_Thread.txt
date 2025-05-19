@@ -1,0 +1,149 @@
+<< 스레드 프로그래밍>> 
+
+1. 스레드란?
+- 프로세스: 실행 중인 프로그램, 독립된 메모리 공간 가짐. = exe 단위로 실행
+- 스레드: 프로세스 내 실행 흐름 단위, 자원 공유, 동시에 동작 가능. = 메소드 실행
+
+
+- 멀티태스킹: 여러 프로세스가 동시에 실행.	> 작업관리자 -> 프로세스 탭      task : 실행단위의 기록지
+- 멀티스레딩: 하나의 프로세스 안에서 여러 스레드가 동시에 실행됨.
+
+2. 자바에서 스레드를 쓰는 이유
+- 동시성 향상: UI 응답성, 백그라운드 작업 처리 등.
+- 자원 활용 증가: 블로킹 상황에서도 다른 스레드가 실행 가능.
+- 복잡한 작업 분할: 유지보수 용이, 병렬 처리(동시에) 가능.
+
+3. 주요 클래스/인터페이스
+- Thread: 스레드 생성 및 실행.
+- Runnable: 실행 코드 정의 인터페이스.
+//concurrent - 자바에서 잘 안씀
+- java.util.concurrent: ExecutorService, Future, Callable 등 고수준 유틸리티.
+- java.util.concurrent.locks: 명시적 Lock, Condition.
+- java.util.concurrent.atomic: AtomicInteger 등 원자 변수 클래스.
+
+4. 스레드 생성 방법
+case01:  Thread 상속
+  - run() 오버라이드, start()로 실행.
+case02:  Runnable 구현	->가장 많이 사용!!! 
+  - Thread 생성자에 Runnable 전달.
+case03: 람다 표현식 (Runnable은 함수형 인터페이스)
+
+
+4-1. 스레드의 종류
+메인 스레드(Main Thread) (일반 스레드 포함 - 메인스레드에서 스레드 생성해서 실행시켜 주기에 )
+ : 주요 흐름 담당 (메인 메소드) / 일반 스레드가 모두 종료되어야 종료 됨
+데몬 스레드(백그라운드 스레드 Thread) : 스레드의 보조역할 
+ - 눈에 보이지 않음
+ - 자동저장, GC, 로깅 모니터링 등
+ - 모든 일 작업하고 자동 종료 (주 스레드{메인 스레드}가 종료되어도 종료됨)
+
+
+5. 스레드 상태	: Enum Thread.State : Thread.getState()		d_ThreadState.java
+- NEW: 생성만 됨
+- RUNNABLE: 실행 준비됨
+- BLOCKED: 락 대기 중
+- WAITING: 무한 대기 중
+- TIMED_WAITING: 시간 제한 대기
+- TERMINATED: 실행 종료
+
+6. 스레드 제어 메서드
+- start(), run(), sleep(), join(), interrupt()
+- isAlive(), getName(), setName(), currentThread()
+
+7. 동기화 기초
+- 경쟁 조건 방지 → synchronized 사용
+	-멀티 스레드 환경에서 공유 자원에 대한 동시 접근을 제어하고 스레드 간의 동기화를 보장
+	-여러 스레드가 동시에 공유 자원에 접근하여 발생하는 데이터 불일치, 경쟁 조건
+- 임계 영역 설정 → 한 번에 하나의 스레드만 접근 가능
+- 예시: Counter 클래스에서 synchronized로 카운터 보호
+[선언 방법]
+	
+	1. 메소드 전체에 synchronized 적용
+	public synchronized void methodName(){
+	// 임계 영역 코드
+		// 파일을 다운로드 받고 있다.
+	
+	}
+	
+	2. 특정 코드 블록에 synchronized
+	public void methodName(){
+		synchronized (lockOjbect){
+			//파일을 다운로드 받고 있다. - 임계 영역
+		}
+	}
+	class 파일다운로드 클래스 {
+		public void methodName(){
+			synchronized (this) {
+				//파일을 다운로드 받고 있다. - 임계 영역
+			}
+		}
+	
+	}
+
+8. JDK 21 새로운 기능
+- Virtual Threads (가상 스레드, Project Loom)
+  → 경량 스레드, 대량 동시성, 기존 API와 호환성 있음
+	
+	-Virtual Threads 
+	1. 운영체제 스레드에 직접적으로 매핑되지 않음 (가상)
+	2. JVM에서 가상으로 운영체제 스레드를 만들어서 스케쥴링 함.
+	3. 수천개의 가상 스레드 -> JVM OS thread [코루틴 방식]
+	4. 블로킹 호출 시에서 JVM이 자동으로 스레드에서 다른 작업으로 전환함.
+	
+	-> 일반 스레드는 OS(천단위)에서 직접 처리하고 Virtual Threads(수십만 단위) 는 JVM에서 처리함.
+	
+	Thread.Builder 로 체크
+	플랫폼 스레드 = 일반 스레드(Platform Thread) : 1:1운영체제 매핑, 블로킹 처리는 자원 점유 후 대기 / CPU 바운드 작업
+	가상 스레드(Virtual Thread) : JavaVM 관리, 블로킹 처리는 일시 중단 후 다른 스레드 생성 / IO 바운드 작업
+	
+
+9. 추가적인 요소  
+- ExecutorService, Future, Callable
+- Lock, Condition, Atomic 변수
+- Thread Pool
+- 데드락 방지
+- 스레드 안전 컬렉션 등
+i_ExecutorServiceExample.java : 고정 크기 스레드 풀 사용 -> Executor, submit, shutdown
+j_FutureCallableExample.java  : Future와 Callable 결과 반환 -> Future, Callable<T>, get() ->리턴값이 있는 비동기
+	-> 결과 대기 중 상태값을 측정하고 싶을 때, 타임아웃 처리 하고 싶을 때
+	
+k_LockConditionExample.java	  : 교착상태 해결 Lock과 Condition활용 -> Lock, Condition, await/signal
+	하나의 스레드는 await()으로 대기 / 다른 스레드는 signal()로 깨움 -synchronized 보다 훨씬 유연하게 코드를 짤 수 있음
+	java.lang.Object - wait()대기 / notify() 깨움
+	
+	통장에 10,000 (공유 변수 static)
+	한 친구는 나에게 돈을 입금하려하고 나는 입금되면 -12,000출금하려고함
+	하나는 입금하고 하나는 출금하는 메소드를 만들어야함 (먼저 입력이 되어야 출금)
+	-> 입금 메소드에 wait를 걸면 입금되는 때 출금을 하려고 하면 wait를 만나게되어 대기풀에 들어가게 됨
+	-> 입금 후에 notify를 써주기-> 대기풀에 들어갔던 것이 notify를 만나면 꺼내짐
+	
+	
+	
+	
+	 
+l_AtomicExample.java	      : AtomicInteger를 활용한 안전한 증가
+m_DeadlockFreeExample.java	  : 데드락 방지를 위한 락 순서 고정
+n_ConcurrentMapExample.java	  :ConcurrentHashMap 예제
+
+10. 주의사항
+- 설계 복잡성 증가 주의
+- 동기화 없이는 공유 자원 안전 보장 어려움
+- 과도한 스레드 생성 → 자원 낭비 → 스레드 풀 권장
+
+
+11. 개념정리
+Executor(I) [스레드 중 누가 일할지 결정] : 작업관리자[스레드 풀] -> 스레드 생성과 실행 시점 관리
+	=>	Executor -> ExecutorService -> submit(Runnable or Callable) -> 스레드 풀에서 스레드를 가져와서 실행 
+	
+synchronized [동시에 들어오지 못하게 문을 잠금] : 작업시 공유자원(static)의 접근 제어 -> 여러개의 스레드가 동시에 접근 할 때의 처리-스레드 경쟁 조건 방지 /
+일관성 보장
+	=>	공유자원 -> synchronized, Lock, Automic 등 -> 스레드 간의 동시 접근 제어
+
+=> 둘은 반드시 같이 사용해야함 (작업은 Executor가, 동기화는 synchronized가 처리)
+	
+	
+	
+	
+	
+	
+	

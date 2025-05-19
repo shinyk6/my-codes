@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="myaddress" class="com.sec01.MyAddress">
+		<constructor-arg value="정길동" type="java.lang.String"/>
+	</bean>
+	<bean id="myaddress02" class="com.sec01.MyAddress">
+		<constructor-arg value="제주도" index="1"/>
+		<constructor-arg value="최주도" index="0"/>
+		<constructor-arg value="010-000-0000" index="2"/>
+	</bean>
+	
+	<!-- setter 주입-->
+	<bean id="myaddress03" class="com.sec01.MyAddress">
+		<property name="addr" value="김길동03addr"/> <!-- 멤버변수를 넣으면 setter를 찾음 -->
+		<property name="name" value="김길동03"/>
+		<property name="tel" value="김길동03tel"/>
+	</bean>
+	
+	<bean id="info" class="com.sec01.AddressInfo">
+		<property name="address" ref="myaddress03"/> <!-- ref는 참조(setAddress가 myaddress를 받음) -->
+		<property name="age" value="30"/> <!-- value는 직접 값 주는 것-->
+	</bean>
+
+</beans>

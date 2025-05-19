@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<bean id="hellomessage" class="com.sec02.HelloMessage"/> <!-- 인터페이스는 new연산자로 객체 생성을 못함-> 후손 클래스로 객체 생성해야함-->
+	
+
+	<bean id="mymessage" class="com.sec02.MyMessage"/>
+	
+</beans>

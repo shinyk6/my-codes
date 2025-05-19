@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>반복문</title>
+    <style>
+      body {
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+      }
+      .result {
+        margin: 20px;
+        padding: 10px;
+        background-color: aquamarine;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>숫자를 입력하고 숫자만큼 버튼을 생성해보자.</h1>
+    <input type="number" id="number" placeholder="숫자를 입력하세요." />
+    <button onclick="addElement()">클릭</button> <br />
+    <!-- input이 아닌 것들은 value가 없음 -->
+    <div class="result" id="divResult"></div>
+
+    <script>
+      function addElement() {
+        const count = Number(document.getElementById("number").value);
+        const nDiv = document.getElementById("divResult");
+
+        nDiv.innerHTML = ""; //초기화 하지 않으면 버튼을 누를 때마다 append하듯이 계속 추가됨
+        for (let i = 1; i <= count; i++) {
+          const newbt = document.createElement("button");
+          newbt.textContent = "button" + i; //innterText 속성으로 들어감
+          nDiv.appendChild(newbt);
+        }
+        document.cr;
+      }
+    </script>
+  </body>
+</html>

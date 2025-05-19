@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>반복문</title>
+  <style>
+    body{font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;}
+    .result{
+      margin: 20px;
+      padding: 10px;
+      background-color: aquamarine;
+    }
+  </style>
+  
+  </head>
+  <body>
+    <h1> 숫자를 입력하고 버튼을 클릭해보자.</h1>
+    <input type="number" id="number" placeholder="숫자를 입력하세요." />
+    <button onclick="runlool()">완료</button> <br>
+
+    <h3>for 반복문 결과</h3>
+    <div id="forResult" class="result"></div>
+
+    
+    <h3>while 반복문 결과</h3>
+    <div id="whileResult" class="result"></div>
+    </body>
+    <script>
+      function runlool(){
+        const num = Number(document.getElementById("number").value) //String으로 가져오기에 수치로 형변환
+        if(isNaN(num) || num<0){ //vaildation
+          alert("숫자 입력 잘해봐");
+          return;
+        }
+
+        // for 반복
+        let forOutput ="";
+        for (let i = 1; i <= num; i++) {
+         forOutput += i+" ";
+       }
+
+       document.getElementById("forResult").textContent = forOutput //화면에 뿌리기 textContent
+
+        // while 반복
+        let whilOutput ="";
+        let j = 0;
+       while(j < num){
+        whilOutput += j+" ";
+        j++;
+       }
+
+       document.getElementById("whileResult").textContent = whilOutput //화면에 뿌리기 textContent
+      }
+    </script>
+  </body>
+</html>

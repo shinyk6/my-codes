@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<import resource="application02-2.xml"/> <!-- 02-2 import 하면 xml을 분리해도 같이 있는 효과가 있음 -->
+
+	<bean id="messagePrint" class="com.sec02.MessagePrinter">
+		<constructor-arg ref="hellomessage"/> <!-- 객체 주입(생성자에 주입) -->
+	</bean>
+
+	<bean id="messagePrint02" class="com.sec02.MessagePrinter">
+		<constructor-arg ref="mymessage"/> <!-- 객체 주입(생성자에 주입) -->
+	</bean>	
+	
+	<!-- 객체 주입 지정된 class인 String(String) -->
+	<!--<bean id="myResource" class="java.lang.String">
+		<constructor-arg value="여기는 리소스 파일의 내용입니다."/>  객체 주입(생성자에 주입) 
+	</bean>		-->
+
+	<!-- 객체 주입 지정된 class인 Integer(String) -->
+	<bean id="myResource02" class="java.lang.String" >
+		<constructor-arg value="100"  />  <!-- 객체 주입(생성자에 주입) -->
+	</bean>
+	
+
+</beans>

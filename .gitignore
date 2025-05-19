@@ -1,0 +1,57 @@
+#루트 디렉토리의 모든 파일과 폴더를 제외
+/*
+
+# 예외 폴더
+!/miniProject/
+!/MyDB/
+!/MyExam/
+!/MyJava/
+!/MyModel/
+!/MySpring/
+!/MyWeb/
+!.gitignore
+!README.md
+
+# 기타 추가할 파일들
+!.gitignore
+!README.md
+
+# Eclipse metadata 폴더 제외
+/.metadata/
+**/.metadata/
+**/.metadata/**
+**/.plugins/
+
+# Java compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE-specific files
+/.idea/
+/.vscode/
+/*.iml
+
+# Build directories
+/target/
+/out/
+/bin/
+
+
+# IntelliJ IDEA files
+.idea
+*.iml
+out/
+*.ipr
+*.iws
+
+
+# Eclipse files
+.project
+.classpath
+.settings/
+
+
+# node
+**/node_modules/

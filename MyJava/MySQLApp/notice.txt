@@ -1,0 +1,61 @@
+ << Emp-Dept  N:1 >>  
+MySQLApp
+└── src
+    └── com
+        └── mysqlapp
+            ├── Main.java
+            ├── controller				--- [6]
+            │   ├── DeptController.java
+            │   └── EmpController.java
+            ├── dao						--- [4]
+            │   ├── DeptDAO.java (I)
+            │   ├── DeptDAOImpl.java (C)
+            │   ├── EmpDAO.java (I)
+            │   └── EmpDAOImpl.java (C)
+            ├── model					--- [3]
+            │   ├── Dept.java
+            │   ├── Emp.java
+            │   └── EmpDeptDTO.java
+            ├── service					--- [5]
+            │   ├── DeptService.java (I)
+            │   ├── DeptServiceImpl.java (C)
+            │   ├── EmpService.java (I)
+            │   └── EmpServiceImpl.java (C)
+            ├── view					--- [7]
+            │   ├── DeptView.java
+            │   └── EmpView.java    
+            └── common
+                └── JDBCTemplate.java   --- [2]
+    └── db.properties                  	--- [1]
+    
+    
+    ===========================================================================
+     MySQLApp
+     1.  model의 클래스들은 record로 구현되어  필드 생성자와 getter만 구성됨을 확인  
+     
+     2.  com.mysqlapp.dao의 클래스들을 try~ with~resoures 구문을 사용한 것을 확인 후 
+         JDBCTemplate에서 close() 구현 사용중 반드시  finally{ close(conn);} 명시 확인
+         
+     3.  try~ with~resoures 구문을 사용한 객체는   finally{ close()}를 명시하지 않아도 된다.
+       -> 코드간결, 누수방지용 
+         
+   	 4. 참조관계가 있는 테이블의 model 생성 및 조인, 서브쿼리등 구문을 실행하는 방법 확인
+   	 
+  	 5. view -> Controller -> service [biz, dao] -> [JDBCTemplate] -> db
+  	 
+  	 6. MVC 패턴 설계 시 코드 작업 순서는 6번의 역순이다.
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
