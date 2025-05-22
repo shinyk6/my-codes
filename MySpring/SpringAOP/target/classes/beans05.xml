@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="student" class="com.test05.Student" />
+    <bean id="myAdvice" class="com.test05.MyAspect" />
+
+    <aop:config proxy-target-class="true"> <!-- AOP 설정 시작 -->
+        <aop:aspect ref="myAdvice"> <!-- 이 클래스로 부가 코드를 구현하겠다. -->
+            <aop:pointcut id="all" expression="execution(* com.test05.Student.*(..))"/> <!-- 부가 코드를 적용할 지점을 선택 -->
+            <aop:before pointcut-ref="all" method="before"/> <!-- 메소드 실행 전-->
+            <aop:after pointcut-ref="all" method="after"/> <!-- 메소드 실행 후 -->
+        </aop:aspect>
+    </aop:config>
+</beans>
+
+<!-- execution(* com.test05.Student.*(..)) 
+			              * 	     : 반환타입	
+			   com.test05.Student.*  : com.test05.Student 클래스 안에 모든 메소드
+			             (..) 		 : 매개인자 개수 타입 상관없다.
+-->

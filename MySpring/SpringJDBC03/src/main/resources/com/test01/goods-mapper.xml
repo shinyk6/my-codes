@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.goodsMapper"> <!-- 해당 페이지를 구분할 수 있는 이름 -->
+
+	<select id="listgoods" resultType="com.test01.GoodsVo">
+		select * from goodsinfo
+	</select>
+
+	<!-- Find -->
+	<select id="findgoods" resultType="com.test01.GoodsVo"
+		parameterType="java.lang.String">
+		select * from goodsinfo where code = #{code}
+	</select>
+
+
+	<!-- insert -->
+	<insert id="insertgoods" parameterType="com.test01.GoodsVo">
+		insert into goodsinfo(code, name, price, maker)
+		values(#{code},#{name},#{price},#{maker})
+	</insert>
+
+
+	<!-- delete -->
+	<delete id="deletegoods" parameterType="com.test01.GoodsVo">
+		delete from goodsinfo where name = #{name}
+	</delete>
+
+	<!-- update -->
+	<update id="updategoods" parameterType="com.test01.GoodsVo">
+		update goodsinfo
+		set    name=#{name},
+		       price=#{price},
+		       maker=#{maker}
+		where code = #{code}
+	</update>
+
+
+</mapper>

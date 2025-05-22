@@ -23,8 +23,7 @@ public class AppConfig {
 		ds.setUrl(env.getProperty("jdbc.url"));
 		ds.setUsername(env.getProperty("jdbc.user"));
 		ds.setPassword(env.getProperty("jdbc.password"));
-
-		
+	
 		return ds;
 	}
 	

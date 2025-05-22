@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://mybatis.org/schema/mybatis-spring 
+           http://mybatis.org/schema/mybatis-spring.xsd">
+	
+	<!-- spring설정 파일 -->
+						
+	<!-- 컴포넌트 스캔 -->
+	<context:component-scan base-package="com.test02"/>	
+	
+	<!-- Mapper 인터페이스 자동 스캔 -->
+	<!-- <mybatis-spring:scan base-package="com.test02"/>	-->
+	
+	<!-- 상품 추가 -->
+	<bean id="vo" class="com.test02.dao.GoodsVo"> 
+		<property name="code" value="G0000001"/>
+		<property name="name" value="새로운 상품"/>
+		<property name="price" value="10000"/>
+		<property name="maker" value="NewMaker"/>			
+	</bean>	
+	
+	<!-- 상품 삭제 -->
+	<bean id="myname" class="java.lang.String">
+		<constructor-arg value="새로운 상품"/>
+	</bean>
+</beans>
