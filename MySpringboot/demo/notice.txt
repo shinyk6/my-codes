@@ -56,6 +56,24 @@ spring-boot-starter-thymeleaf (템플릿엔진)
 - 컨트롤러에서 Model객체를 통해 데이터를 뷰(HTML)로 전달할 수 있고, <th:> 태그를 지원한다.
 
 
+test05 : org.springframework.ui.Model 객체 - Model + String(View)
+	-> 컨트롤러에서 View(HTML) 데이터를 전달하기 위한 객체 (웹페이지에서 동적으로 값을 표시할 때 전달용으로 사용)
+	-> addAttribute(key, value); 키로 값을 저장한다.
+@PathVariable(URL경로 변수 바인딩)을 사용하여 값을 전달하는 과정을 확인 
+	-> @RequestMapping("/{num}")
+	 public String index(@PathVariable int num, Model model){}  - path가 가지고 있는 변수를 num 변수로 받음
+																
+
+test06 : org.springframework.ui.ModelAndView
+	-> 데이터도 담고, 뷰 이름도 설정해줌 - 하나의 객체로 데이터와 뷰를 같이 다루는 장점이 있음
+		model.addObject("msg", "sum="+sum); //데이터 담고
+		model.setViewName("index"); //뷰 이름 지정
+
+
+
+
+
+
 
 
 
