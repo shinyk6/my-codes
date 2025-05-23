@@ -47,7 +47,7 @@ Spring 6.x  @정리
 
 7. Spring Boot 관련
 ----------------------------------------------------
-@SpringBootApplication          - Boot 핵심 애너테이션
+@SpringBootApplication(@Configuration + @EnableAutoConfiguration + @ComponentScan)     - Boot 핵심 애너테이션
 @EnableAutoConfiguration        - 자동설정 기능 활성화
 @EnableConfigurationProperties  - 설정 클래스 활성화
 @ConfigurationProperties        - 설정파일 → 자바 객체
