@@ -1,0 +1,36 @@
+1. pom.xml에서 Jpa, h2 inject 확인
+	프로젝트 실행 후 브라우저에서 http://localhost:8080/h2-console  DB확인
+	h2가 웹콘솔을 지원
+	
+	JPA사용 -  객체랑 테이블을 매핑해서 SQL 거의 안 쓰고 DB 접근
+			  개발자가 Java 객체만 다루면, 내부적으로 SQL이 자동 생성됨
+	
+2. User 클래스 추가 한다. getter, setter 
+
+3. User @를 이용해서 Entity 생성한다.
+	
+	@Entity
+	@Id
+	@Column          =>  JPA에서 필수 선언 해야하는 어노테이션들
+	
+4. UserRepository.java 인터페이스 생성 
+org.springframework.data.jparepository.JpaRepository<T,ID>   확장한 코드를 작성한다.
+	T : 엔티티 클래스 타입 User
+	ID : PK 타입		id의 타입 = int = Integer
+
+
+5. UserController.java 생성
+
+6. index.html 생성
+
+- th:object="${객체이름}" : 폼의 모든 데이터를 담는 객체
+	Model이 가지고 있는   model.addAttribute("formModel", user);
+	
+- th:value="*{속성명}"	: 객체로 필드에 접근
+	-> th:value="*{name}" -formModel객체의 name필드값을 가져온다.
+	-> formModel.getName()
+
+- th:each="obj : ${data}"	$을 주면 변수	-> th:each="변수명 : ${컬렉션객체}" 
+  th:text="${obj.id}"
+  td th:text="${obj.name}"
+  </tr>

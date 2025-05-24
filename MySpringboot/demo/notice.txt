@@ -70,7 +70,14 @@ test06 : org.springframework.ui.ModelAndView
 		model.setViewName("index"); //뷰 이름 지정
 
 
+test07 : Get + Post방식으로 추가 코드 테스트
+th:text => text 대입
+th:vlue => 값 대입
 
+방법 : 
+GET/   		-> 폼 출력 -> 입력폼 리턴
+POST/  		-> 폼에서 숫자를 입력 -> 합계 출력 
+GET /10 	-> URL 직접 입력 -> sum = 55
 
 
 
