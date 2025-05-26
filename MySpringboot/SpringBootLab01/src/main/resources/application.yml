@@ -4,12 +4,15 @@ server:
  
 #2. 스프링관련 설정
 spring: 
+ thymeleaf:
+    check-template-location: false
  #데이터 소스 연결
  datasource:  # localhost:8080/h2-console (h2콘솔)
     url: jdbc:h2:mem:testdb 
     driver-class-name: org.h2.Driver 
     username: sa 
     password: 
+
  #h2 콘솔 환경
  h2: 
     console: 
