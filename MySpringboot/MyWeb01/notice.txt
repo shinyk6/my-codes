@@ -32,5 +32,4 @@ org.springframework.data.jparepository.JpaRepository<T,ID>   확장한 코드를
 
 - th:each="obj : ${data}"	$을 주면 변수	-> th:each="변수명 : ${컬렉션객체}" 
   th:text="${obj.id}"
-  td th:text="${obj.name}"
-  </tr>
+  th:text="${obj.name}"

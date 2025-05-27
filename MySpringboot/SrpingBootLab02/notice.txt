@@ -1,0 +1,72 @@
+
+1. org.springframework.http
+
+- ResponseEntity<T> : http응답을 가진 객체, HTTP 상태코드, 헤더, 바디 값을 제어 가능
+					  http응답을 완전 제어 _ 상태코드 200 성공 시, 혹은 400대 실패 시 구현할 수 있는 코드를 커스텀
+    
+    public ResponseEntity<T> {   // T- body타입
+	    HttpStatus status;   //상태코드 
+	    HttpHeaders headers; //헤더 
+	    T body;  //바디 (응답 데이터- 객체, 문자열, JSON)
+    }
+    
+   	ex01)
+    @GetMapping(”/hello”)
+    public ResponseEntity<String> hello() {
+	    String message = “안녕”;
+	    return ResponseEntity.ok().body(message);   //ok가 떨어졌을 때 메세지 리턴
+    }
+   	
+   	// RequestEntity(T body, MultiValueMap<String,String> headers, HttpMethod method, URI url, Type type)
+   	
+   	
+	ex02)
+   @GetMapping("/download")
+     public  ResponseEntit<byte[]>  downloadFile(){
+       byte[]  filedata = = ..... ;
+       HttpHeaders  headers  = new HttpHeaders(); 
+       headers.add(HttpHeaders.CONTENT_DISPOSITION ,"attachment; filename="" + file.getFilename() + """ ); 
+      	return  ResponseEntity.ok().header(headers).body(filedata);
+     }
+   	
+   ========================================================================================================
+   
+   @ExceptionHandler(MethodArgumentNotValidException.class)     //예외처리 이벤트
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {  //ValidException -예외가 난 이유를 가지고 있음
+        String errorMessage = ex.getBindingResult() 
+                                .getAllErrors() 
+                                .get(0) 
+                                .getDefaultMessage(); 
+        return ResponseEntity 
+                .badRequest()  //상태 코드값
+                .body(errorMessage);   //body T타입 에러메세지를 리턴
+    }	
+   
+   
+2. https://docs.spring.io/spring-framework/reference/web/webmvc.html
+
+3. DispatcherServelet : 모든 요청의 진입점, 요청(페이지) 위임과 흐름(Controller 매핑) 등
+						Controller에서 실행되는 값 전달 및 리턴, MVC로직 흐름 등을 관련한 정보 객체이며, 실제 controller 실행을 해주는 객체
+						
+						
+4. /src/main/resources/templates/error.html -> Springboot에서 기본 error페이지로 지정해서 사용됨
+	-> 없을 경우 이 위치에서 자동으로 가상 생성해서 매핑
+	-> 있을 경우(명시했을 경우) 명시된 페이지로 매핑	
+	
+5. 커스텀 예외처리 방법
+	1)[강력추천] @RestController -> @RestControllerAdvice 클래스에서 reponse가 가지고 있는 entity객체 (ResponseEntity객체)로 리턴하는 메소드를 예외 종류에 맞게 구현
+	2) @Controller -> @ControllerAdvice 클래스에서 ModelAndView객체로 리턴하는 메소드를 예외 종류에 맞게 구현		
+			
+	3)[강력추천] @Controller등과 함께 Springboot가 가지고 있는 ErrorController인터페이스를 implements해서 사용자 예외 클래스를 선언한 후 이벤트로 핸들링
+		/src/main/resources/templates/error/
+										   404.html    // 각각 처리
+										   500.html 
+	=> 1, 3 섞어서 쓰는게 가장 좋음					
+						
+						
+						
+						
+						
+						
+						
+						

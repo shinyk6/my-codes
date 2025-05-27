@@ -33,11 +33,11 @@ public class StudentControllerTest {
 		student.setGrade(6);
 		student.setName("8888");
 	}
+	
 	/*
 	 * 	1) 학생 등록 테스트
 	 * 		(POST /students)
 	 */
-	
 	@Test
 	void createStudent() throws Exception{
 		
@@ -52,7 +52,7 @@ public class StudentControllerTest {
 		 mockMvc.perform(post("/students")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(newStudentJson))
-					.andExpect(status().isCreated()) //201 Created, isOk() 200 사용해도됨
+					.andExpect(status().isOk()) //201 Created, isOk() 200 
 					.andExpect(jsonPath("$.name").value("홍길동"))
 					.andExpect(jsonPath("$.grade").value(1));
 	}
@@ -61,15 +61,9 @@ public class StudentControllerTest {
 	 * 	2) 학생 목록 테스트
 	 * 
 	 */		
-	
 	@Test
 	void getAll() throws Exception {
 		 mockMvc.perform(get("/students"))
 					.andExpect(status().isOk());
 	}
-
-	
-	
-	
-	
 }

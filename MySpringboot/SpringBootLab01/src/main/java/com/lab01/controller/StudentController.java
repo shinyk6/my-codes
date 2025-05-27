@@ -25,7 +25,7 @@ import com.lab01.service.StudentService;
 public class StudentController {
 
 	@Autowired
-	private StudentService studentService;
+	private StudentService studentService; //Service빈을 studentService필드에 주입
 	
 	/// 학생 목록 조회
 //	@GetMapping
@@ -33,6 +33,7 @@ public class StudentController {
 //		return studentService.findAll();
 //	}
 	
+	/// 학생 등록
 	@PostMapping
 	public Student createStudent(@RequestBody Student student) {
 		return studentService.save(student);
@@ -95,7 +96,4 @@ public class StudentController {
 		
 		return resource;
 	}
-	
-	
-	
 }
