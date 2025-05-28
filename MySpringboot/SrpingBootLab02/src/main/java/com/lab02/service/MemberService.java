@@ -37,7 +37,7 @@ public class MemberService {
 		existing.setName(member.getName());
 		existing.setEmail(member.getEmail());
 
-		return memberRepository.save(existing) ;
+		return memberRepository.save(existing);
 	}
 	
 	//특정 ID의 회원을 삭제

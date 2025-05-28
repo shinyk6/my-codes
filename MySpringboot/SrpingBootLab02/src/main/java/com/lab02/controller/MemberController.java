@@ -36,10 +36,7 @@ public class MemberController {
 	}
 	
 	@PostMapping
-	public Member createMember(@Valid @RequestBody Member member) { //@Vaild : 대상 객체의 확인 조건을 만족할 경우 통과 가능
-																//@RequestBody : 클라이언트가 보낸 JSON본문(body)를 java객체로 변환해줌 (member는 JSON에서 변환된 자바 객체)
-																// 즉 JSON -> Java 를 RequestBody가 해주는 것
-																//JSON본문을 받을 때만 사용 - URL파라미터나 폼데이터는 안써도 됨
+	public Member createMember(@Valid @RequestBody Member member) { 
 		return memberService.saveMember(member);
 	}
 

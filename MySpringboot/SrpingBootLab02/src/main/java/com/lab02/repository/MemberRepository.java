@@ -9,6 +9,4 @@ import com.lab02.entity.Member;
 public interface MemberRepository extends JpaRepository<Member, Long>{
 
 	//필요하면 커스텀 쿼리 메소드 추가 가능 _구체클래스로 구현
-	
-	
 }
