@@ -3,9 +3,38 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 
+<!-- 
+	mybatis가 이 파일을 TodoMapper인터페이스와 연결해서 SQL실행 처리를 만들어주고,
+	 Spring이 이것을 bean으로 등록할 수 있게 mybaits-spring-boot-starter가 자동 처리해줌
+-->
 
 <mapper namespace="com.todo.app.mapper.TodoMapper"> 
+
 <select id="selectAll" resultType="com.todo.app.entity.Todo"> 
-select * from todo_items 
+	select * from todo_items 
 </select> 
+
+<insert id="add" parameterType="com.todo.app.entity.Todo">
+	insert into todo_items(title, time_limit) values(#{title}, STR_TO_DATE(#{time_limit},'%Y-%m-%d'))
+</insert>
+
+<update id="update" parameterType="com.todo.app.entity.Todo">
+	update todo_items set title=#{title}, time_limit=#{time_limit}, done_flag=#{done_flag} where id=#{id}
+</update>
+
+<select id="selectIncomplete" resultType="com.todo.app.entity.Todo">
+	select * from todo_items where done_flag=0
+</select>
+
+<select id="selectComplete" resultType="com.todo.app.entity.Todo">
+	select * from todo_items where done_flag=1
+</select>
+
+<delete id="delete" parameterType="com.todo.app.entity.Todo">
+	delete from todo_items where done_flag=#{done_flag}
+</delete>
+
 </mapper>
+
+
+

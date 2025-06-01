@@ -1,0 +1,9 @@
+간단한 페이지 이동을 해보자.
+1) admin:admin123	-> /admin 페이지 이동
+2) user:user123		-> /user 페이지 이동
+3) public:public123	-> /public 페이지 이동
+
+4) 셋 다 로그인 		-> /접근 가능하게
+5) controller Test코드를 작성해보자.
+
+thymeleaf사용

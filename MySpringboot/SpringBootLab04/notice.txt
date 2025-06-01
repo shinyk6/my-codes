@@ -1,0 +1,138 @@
+- @JoinColumn의 주요 속성
+
+name	: 	FK 컬럼명 (DB에 실제로 저장되는 컬럼명) _ 기본
+referenced :  	FK가 참조할 대상 테이블의 컬럼명
+unique	 :	FK 컬럼에 유니크 제약조건 추가
+nullable	:	FK 컬럼의 NULL 허용 여부
+insertable	:	INSERT SQL문 생성 시 FK 컬럼을 포함할지 여부 (가상 db를 사용할 경우)
+updatable	:	UPDATE SQL문 생성 시 FK 컬럼을 포함할지 여부
+columnDefinition	:	DDL 생성 시 FK 컬럼의 정의를 직접 작성 (varchar(255) 등)
+table	:	FK 컬럼이 다른 테이블에 있는 경우에만 지정 (거의 사용하지 않음)
+
+@Entity
+public class Emp {
+
+    @Id
+    private int empno;
+    private String ename;
+
+    @ManyToOne
+    @JoinColumn(
+        name = "deptno",                   // FK 컬럼명
+        referencedColumnName = "deptno",   // 참조하는 Dept 엔티티의 PK 컬럼명
+        nullable = false,                  // NOT NULL
+        unique = false,                    // 유니크하지 않음
+        insertable = true,                 // INSERT문에 포함
+        updatable = true,                  // UPDATE문에 포함
+        columnDefinition = "BIGINT(10)"    // FK 컬럼 DDL 정의
+    )
+    private Dept dept;
+}
+
+
+Emp, Dept - 각각 개별 속성을 재정해보자.
+
+ex01) FK로 컬럼명 name으로 지정하고 referencedColumnName 개별속성으로 지정하자.
+@JoinColumn(name = "deptno", referencedColumnName = "deptno")
+
+ex02) FK컬럼에 Not Null을 지정하겠다.
+@JoinColumn(name = "deptno", nullable = false)
+
+ex03) 1:1관계에서 FK를 유니크로 지정해보자.
+@JoinColumn(name="deptno", unique=true)
+
+ex04) FK를 읽기전용으로 사용해보자.
+@JoinColumn(name="deptno", insertable=false, updatable =false)
+
+ex05) DDL 생성 시 FK 컬럼의 타입/길이를 지정해보자. BIGINT(10)
+@JoinColumn(name="deptno" columnDefinition = "BIGINT(10))
+
+
+========================================================================
+
+1) N:1 (@ManyToOne : 여러 사원이 하나의 부서에 소속)
+여러 Emp가 하나의 Dept를 가진다.
+class Emp{
+	@ManyToOne
+	@JoinColumn(
+		 name = "deptno",                   // FK 컬럼명
+	        referencedColumnName = "deptno",   // 참조하는 Dept 엔티티의 PK 컬럼명
+	        nullable = false,                  // NOT NULL
+	        unique = false,                    // 유니크하지 않음
+	        insertable = true,                 // INSERT문에 포함
+	        updatable = true,                  // UPDATE문에 포함
+	        columnDefinition = "BIGINT(10)"    // FK 컬럼 DDL 정의
+	)
+	private Dept dept;	
+}
+class Dept{
+
+	//일대 다 : 하나의 부서에 여러명의 Emp
+	@OneToMany(mappedBy="dept") 	mappedBy : FK 컬럼은 반대쪽 엔티티(EMP)에만 존재하고 Dept테이블에는 FK컬럼없음!! (반대방향)
+	private List<Emp> emps;
+}
+
+
+2) 1:1 (@OneToOne : 사원 하나에 상세정보 하나)
+class Emp{
+	@OneToOne
+	@JoinColumn(
+		 name = "emp_info_id",                  // FK 컬럼명
+	        referencedColumnName = "id",   // empInfo가 가지고 있는 PK컬럼
+	        nullable = false                  // NOT NULL
+	)
+	private EmpInfo empInfo;
+}
+class EmpInfo{
+
+	//일대일 양방향
+	@OneToOne(mappedBy="empInfo")
+	private Emp emp;
+}
+
+
+3) n:m	(@ManyToMany + @JoinTable : 학생과 강의 관계 -> 학생은 여러개의 강의를 듣고, 강의는 여러 학생이 들음)
+
+class Student{
+	
+	@ManyToMany
+	@JoinTable(	//다대다 관계는 중간 테이블이 있을거라 가정해서 JoinTable
+		name = "student_course",					//중간 테이블명
+		joinColumns = @JoinColumn("student_id")		//Student의 FK
+		inverseJoinColumns = @JoinColumn("course_id") //Course의 FK
+	)
+	private List<Course> courses;
+}
+class Course{
+
+	@Id
+	private int course_id;
+	
+	@ManyToMany(mappedBy="courses")
+	private List<Student> students;
+}
+
+================================================================================================
+<<관계 정리>>
+			 주 테이블  							주 테이블에 FK컬럼 존재				중간 테이블 필요
+ N : 1	->	@ManyToOne 									O							X
+ 1 : N	->	@OneToMany(mappedBy)						X							X
+ 1 : 1	->	@OneToOne + @JoinColumn/mappedBy		  O, X(주테이블에 O, 종테이블에X)		X
+ N : M	->	@ManyToMany	+ @JoinTable					X							O
+
+exam)
+ 1:N (Dept-Emp) : N쪽(Emp) FK @JoinColum
+ 1:1	FK는 반트시 한쪽 테이블에 만들고, 반대쪽은 mappedBy
+ N:M	반드시 중간 테이블 @JoinTable 생성
+
+
+
+
+
+
+
+
+
+
+
+
