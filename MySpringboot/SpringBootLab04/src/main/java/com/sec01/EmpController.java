@@ -116,7 +116,7 @@ public class EmpController {
 	 *  POST /emp/{empno}/delete
 	 */
 	@PostMapping("/{empno}/delete")
-	public String delete(int empno) { //사원 삭제
+	public String delete(@PathVariable int empno) { //사원 삭제
 		empService.delete(empno);
 		return "redirect:/emp/list";
 	}

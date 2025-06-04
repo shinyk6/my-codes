@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>학생 목록</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}" /> <!-- css파일 링크 -->
+</head>
+<body>
+<h1>학생 목록</h1>
+<table border="1">
+    <tr>
+		<th>번호</th>
+        <th>이름</th>
+        <th>수강 중인 과목명</th>
+		<th>삭제</th>
+    </tr>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.id}"></td>
+        <td th:text="${student.name}"></td>
+	<!-- <td th:text="${student.courses.title}"></td> -->
+		<td><a th:href="@{'/students/delete/' + ${student.id}}">삭제</a></td>
+    </tr>
+</table>
+</body>
+</html>

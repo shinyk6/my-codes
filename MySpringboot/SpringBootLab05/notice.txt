@@ -156,16 +156,46 @@ EntityManager : 엔티티 관리, 캐시 관리, DB 직접저장 등 (Entity생�
 	=> 사용 방법  EntityManager.persist() -> EntityManager.find() 또는 jpa의 CRUD 메소드로 작업
 		-> 커밋 또는 flush() 하게 되면 DB와 동기화가 된다.  (그냥 save하면 메모리에 머무르고, savEndFlush를 하면 바로 DB동기화)
 
+===============================================================================================================
+
+https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+
+	==SpEL (Spring Expression Language) 17,18,19 -> #{...} 동적으로 쿼리의 파라미터나 컨텍스트 값을 지정함.
+
+case 1 : 메소드 매개변수를 사용하는 방법 SpEL
+@Query("select u from User u where u.firstname = ?1 and u.firstname=?#{[0]} and u.emailAddress = ?#{principal.emailAddress}")
+List<User> findByFirstnameAndCurrentUserWithCustomQuery(String firstname);
+
+-> ?1은 메소드의 첫번째 매개변수를 가리킴(firstname)
+-> ?#{[0]} 는 매개변수 중 0번째 인덱스에 있는 매개변수를 가리킴(firstname)
+ 
+case 2 : 메소드 파라미터를 사용 SpEL
+@Query("select u from User u where u.lastname like %:#{[0]}% and u.lastname like %:lastname%")  //Param의 0번째 
+List<User> findByLastnameWithSpelExpression(@Param("lastname") String lastname);
+
+case 3 : 메소드 매개변수를 사용하는 방법 SpEL -> 첫번째 파라미터를 SqL 와일드 카드를 이스케이프로 처리하겠다.
+@Query("select u from User u where u.firstname like %?#{escape([0])}% escape ?#{escapeCharacter()}")
+List<User> findContainingEscaped(String namePart);
 
 
+@Modifying
+@Query("update User u set u.firstname = ?1 where u.lastname = ?2")
+int setFixedFirstnameFor(String firstname, String lastname);
 
 
+==> 
+@Modifying
+@Query("update User u set u.firstname = #{[0]} where u.lastname = #{[1]}")
+int setFixedFirstnameFor(String firstname, String lastname);
 
 
+Query Hints
+public interface UserRepository extends Repository<User, Long> {  -> hibernate에 힌트를 주는 것(readOnly할지, count쓸지 말지 등) / 캐시의 유무
 
-
-
-
+  @QueryHints(value = { @QueryHint(name = "name", value = "value")},  -> value=value로 주면 값으로 전달, value=true를 하게 되면 조회 결과가 readOnly가 된다.
+              forCounting = false)  								   -> count쿼리 사용하지 않겠다.
+  Page<User> findByLastname(String lastname, Pageable pageable);
+}
 
 
 
