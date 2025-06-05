@@ -10,6 +10,6 @@ public @Data class StudentCourseDto {
 	private String studentName;
 	private String courseTitle;
 	
-	public StudentCourseDto(){};
+	public StudentCourseDto(){}; // Projection.fields 사용하기 위해 기본생성자 필수
 	
 }

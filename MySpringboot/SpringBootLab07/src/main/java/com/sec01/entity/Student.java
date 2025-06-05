@@ -3,6 +3,8 @@ package com.sec01.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,7 +37,6 @@ public class Student {
         joinColumns = @JoinColumn(name = "student_id"),  // 현재 클래스= Student 외래키
         inverseJoinColumns = @JoinColumn(name = "course_id")  //반대 클래스= Course 외래키
     ) 
-    @ToString.Exclude // 루프를 돌기에 빼줌
+    @JsonIgnore //JSON타입으로 진행될 때 특정 필드를 무시 - 무한 재귀 방지
     private List<Course> courses = new ArrayList<>(); //객체 생성 하지 않으면 선언만 한 상태이기에 null상태로 빙글빙글 돎
-    												//객체를 생성해야 주소 던져서 값을 리턴 받을 수 있음
 } 

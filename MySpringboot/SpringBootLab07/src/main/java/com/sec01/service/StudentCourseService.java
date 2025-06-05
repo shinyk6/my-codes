@@ -1,12 +1,10 @@
 package com.sec01.service;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import com.sec01.dto.StudentCourseDto;
+import org.springframework.stereotype.Service;
 import com.sec01.entity.Course;
 import com.sec01.entity.Student;
 import com.sec01.repository.CourseRepository;
@@ -17,13 +15,28 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class StudentCourseService {
-
+/*
+		필드 주입  -> 런타임 까지 의존성 누락 유무를 감지 못함
+		
 	@Autowired
 	private StudentRepository studentRepository;
 	
 	@Autowired
 	private CourseRepository courseRepository;
 	
+*/
+	
+	
+	// 생성자 주입 (권장 사항) -> final로 불변유지, 컴파일 타입 시 확인 가능, 컴파일 시점 명확하게 주소 확인! (필드주입은 다 안됨)
+	private final StudentRepository studentRepository;
+	private final CourseRepository courseRepository;
+	
+	public StudentCourseService(StudentRepository studentRepository, CourseRepository courseRepository) {
+		
+		this.studentRepository = studentRepository;
+		this.courseRepository = courseRepository;
+	}
+
 	// [1] 전체 학생 목록 조회
 	public List<Student> getAllStudents(){
 		return studentRepository.findAll();
@@ -34,12 +47,11 @@ public class StudentCourseService {
 		return courseRepository.findAll();
 	}
 	
-	// [3] 학생 추가 (과목 연결도 처리)
+	// [3] 새 학생 추가 (과목 연결도 처리)
 	public void addStudent(String name, List<Long> courseIds) { //한 학생이 여러 개의 과목을 수강-List객체로 받아옴 
 		Student student = new Student();
 		student.setName(name);
 
-		
 		//중간 테이블 값 추가
 		if (courseIds != null && !courseIds.isEmpty()) { //데이터가 있을 경우만
 			List<Course> courses = courseRepository.findAllById(courseIds); //코스id로 코스 정보를 찾아서
@@ -49,7 +61,6 @@ public class StudentCourseService {
 				course.getStudents().add(student);
 			}
 		}
-		
 		studentRepository.save(student);
 	}
 	
@@ -77,14 +88,5 @@ public class StudentCourseService {
 	courseRepository.deleteById(id);
 	}
 	
-	// [7] 특정 과목을 수강하는 학생 목록 조회
-	public List<Student> getStudentsByCourseTitle(String courseTitle) { 
-		return studentRepository.findByCourseTitle(courseTitle); 
-	} 
-	
-	// [8] 원하는 필드를 dto를 이용해서 Projections 사용하여 조회
-	public List<StudentCourseDto> getStudentCourseList(){
-		return studentRepository.findStudentCourseDtoList();
-	}
 
 }

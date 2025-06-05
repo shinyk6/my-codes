@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class StudentCourseController {
 
 	@Autowired
-	StudentCourseService service;
+	private StudentCourseService service;
 	
 	// [1] 모든 학생 목록과 과목 목록을 함께 조회한다.
 	@GetMapping("/students")
@@ -77,7 +77,7 @@ public class StudentCourseController {
     
     // [7] 특정 과목을 수강하는 학생 목록을 조회하는 기능
     @GetMapping("/students/by-course") 
-    public String showStudentsByCourse(@RequestParam("title") String courseTitle, Model model) { 
+    public String showStudentsByCourse(@RequestParam(value="title", defaultValue="머신러닝") String courseTitle, Model model) { 
 	    List<Student> students = service.getStudentsByCourseTitle(courseTitle); 
 	    model.addAttribute("students", students); 
 	    model.addAttribute("courseTitle", courseTitle); 
