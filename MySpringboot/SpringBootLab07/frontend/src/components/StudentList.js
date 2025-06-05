@@ -1,17 +1,19 @@
 // src/components/StudentList.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from 'axios'; //비동기 통신 하겠다
+
+
 
 const StudentList = () => {
   // [1] 상태 선언
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState([]); //students를 setStudents에 값전달 - 현재 학생목록을 저장하는 변수, 상태를 업데이트 할 때 사용하는 함수 = 초기값은 빈 배열로
   const [courses, setCourses] = useState([]);
   const [name, setName] = useState('');
   const [selectedCourses, setSelectedCourses] = useState([]);
 
   // [2] 학생+강의 목록 불러오기
   const loadStudents = async () => {
-    const res = await axios.get('/api/students');
+    const res = await axios.get('/api/students'); //비동기 get방식
     setStudents(res.data.students);
     setCourses(res.data.courses);
   };
@@ -87,7 +89,7 @@ const StudentList = () => {
           <button
             type="button"
             className="btn btn-secondary w-100"
-            onClick={() => window.location.href = '/courses'}
+            onClick={() => window.location.href = '/courses'} 
           >
             강의 목록으로 이동
           </button>
