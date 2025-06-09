@@ -1,0 +1,19 @@
+
+
+//백그라운드 전용
+TaskScheduler   -> https://docs.spring.io/spring-framework/reference/integration/scheduling.html#scheduling-task-scheduler
+
+TaskScheduler(I) : 스프링 스케쥴러
+ThreadPoolTaskScheduler(구체 C) 를 기본으로 사용
+@Scheduled 
+
+====================================================================================================
+
+ @EnableScheduling -> 환경설정
+ @Scheduled -> 백그라운드 실행하는 메소드에 명시
+ @Scheduled(fixedRate = 5000)  -> TaskScheduler인터페이스에 구현되어있는 메소드(fixedRate등)를 속성으로 사용 가능
+ 
+ ===================================================================================================
+ 실습 com.sec05:
+  [1] 단일 백그라운드 실행
+  [2] 스레드풀 커스텀  https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/SchedulingConfigurer.html

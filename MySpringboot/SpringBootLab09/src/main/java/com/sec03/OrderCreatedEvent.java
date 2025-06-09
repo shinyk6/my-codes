@@ -13,7 +13,7 @@ public class OrderCreatedEvent {  // 단순 POJO 사용 권장
 	public String getProductName() {
 		return productName;
 	} 
-	
+
 	public String getEmail() {
 		return email;
 	} 
