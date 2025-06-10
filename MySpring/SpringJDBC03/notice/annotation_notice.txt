@@ -60,8 +60,10 @@ Spring 6.x  @정리
 @MockBean                   - 가짜 빈 주입
 @DataJpaTest                - JPA Repository 테스트
 
+====================================================
 
-[주의사항: Spring 6.x 이후 변경사항]
+
+[주의사항: Spring 6.x 이후 변경사항]  6.2.7 Ver  jakrta.*   단독 설치
 ----------------------------------------------------
 - javax.* → jakarta.* 로 마이그레이션
   예: @Resource, @PostConstruct, @PreDestroy 등
