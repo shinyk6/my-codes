@@ -1,0 +1,278 @@
+============== 기본조회 및 조건 필터링 ==========================
+
+-- Q1. 사원 테이블에서 '부서번호'와 '사원 이름'을 모두 출력해보자. 단 별칭으로 출력하자.
+//테이블 명을 변경해보자.
+
+use mydb;
+
+db.runCommand({
+     renameCollection:"mydb.testemp",
+     to:"myemp.emp",
+     dropTarget:true
+})
+
+
+db.runCommand({
+     renameCollection:"myemp.testemp",
+     to:"myemp.testemp",
+     dropTarget:true
+})
+
+
+db.emp.find({}, {_id:0,deptno:1, ename:1})
+
+별칭은 필드명 변경
+db.testemp.aggregate([
+	$project:{_id:0, 부서번호:"$deptno", 사원이름:"$ename"}
+])
+
+
+-- Q2. 부서번호가 10번인 사원의 모든 정보를 출력해보자.
+
+db.emp.find({deptno:10},{_id:0})
+db.emp.find({deptno:10},{_id:false})
+
+db.runCommand({
+	find:"emp", 	//컬렉션
+	filter:{deptno:10},	//쿼리 조건
+	projection:{_id:0}	//프로젝션 (출력할 필드)
+})
+
+
+-- Q3. 급여가 3000 이상인 사원의 사번(empno), 이름(ename), 급여(sal)를 출력해보자.
+
+db.emp.find({sal:{$gte:3000}, {_id:0, empno:1, ename:1, sal:1 })
+
+db.runCommand({
+	find:"emp",
+	filter:{$gte:3000},
+	projection:{_id:0, empno:1, ename:1, sal:1 }
+})
+
+
+-- Q4. 직업이 'MANAGER'인 사원의 이름과 직업를 출력해보자.
+-- Q5. 입사일이 1985년 이후인 사원의 이름과 입사일을 출력해보자.
+
+db.emp.find({hiredate:{$gt:"1985-01-01"}}, {_id:0, ename:1, hiredate:1})
+
+
+db.emp.find({hiredate:{$gt: new ISODate("1985-01-01T00:00:00Z")}}, {_id:0, ename:1, hiredate:1})
+
+전체 문서의 hiredate의 문자열을 ISODate로 변환하고 싶다.
+조건1 : hiredate필드가 존재하는지 확인하고 타입이 문자열인 문서만 선택
+	hiredate:{$exists : true, $type: "string"}
+조건2 : 기존 필드를 변경해보자. ISODate로 $toDate
+	$set:{
+		hiredate : {$toDate:"$hiredate"} 
+	}	
+
+updateMany({}, []) -앞에있는것을 뒤에있는것으로 바꿈
+
+db.emp.updateMany({
+hiredate:{$exists : true, $type: "string"}
+ }, 
+[{
+   $set:{
+           hiredate : {$toDate:"$hiredate"}
+   } 
+ }]
+)
+
+번외 sal의 타입을 $toInt로 바꾸기
+db.emp.updateMany({
+ sal:{$exists : true, $type: ["string", "double", "number"]} //string or double or number
+ }, 
+[{
+   $set:{
+           sal: {$toInt:"$sal"}
+   } 
+ }]
+)
+
+-- Q6. 급여가 2000 이상이면서 직무가 'SALESMAN'인 사원의 이름과 급여, 직업를 출력해보자.
+
+db.emp.find(
+         {sal : {$gte:2000}, job : "SALESMAN"},
+         {_id : 0, ename:1, sal:1, job:1}
+                   )
+
+=> , 로 나열하면 or이 아닌 and로 인식
+
+
+-- Q6-1. 급여가 2000 이상 또는 직무가 'SALESMAN'인 사원의 이름과 급여, 직업를 출력해보자.
+db.emp.find(
+... {
+...    $or:[
+...         {sal : {$gte : 2000}},
+...         {job : "SALESMAN"}
+...        ]
+... },
+... { _id:0, ename:1, sal:1, job:1}
+... )
+
+
+-- Q7. 커미션이 NULL이거나 급여가 2000 이상인 사원의 이름과 급여, 커미션을 출력해보자.
+-- 단, 커미션이 없으면 없다고 출력을 해보자.
+
+db.emp.aggregate([
+    // 1. 조건 필터링: comm이 null 이거나 sal이 2000 이상인 경우
+    {
+      $match: {
+        $or: [
+          { comm: { $eq: "" } },
+          { sal: { $gte: 2000 } }
+        ]
+      }
+    },
+    // 2. 출력 필드 설정: ename, sal, comm (comm이 null 또는 ""이면 '없음'으로 표시)
+    {
+      $project: {
+        _id: 0,
+        ename: 1,
+        sal: 1,
+        comm: {
+          $cond: {
+            if: { $or: [ { $eq: ["$comm", null] }, { $eq: ["$comm", ""] } ] },
+            then: "없음",
+            else: "$comm"
+          }
+        }
+      }
+    }
+  ])
+
+
+select ename, sal
+    case
+         when comm is null or comm = "then '없음'   --2
+        else comm
+   end as res
+from
+   emp
+where
+   comm is null or comm =" or sal >= 2000;    --1️
+
+
+
+-- Q8 사원의 이름과 매니저를 출력하자, 단 매니저가 없으면 '없음'으로 출력해보자. $cond if ~ then  ~ else
+그냥 출력,조건 - find
+생성, 컬럼 별칭변경, 조건에 대한 내용 변경하여  출력 등등 - aggregate
+
+db.emp.aggregate([])
+
+ db.emp.aggregate([
+... {
+...   $project:{
+...     _id:0,
+...     ename:1,
+...     mgr : {
+...             $cond : {if :{$eq : ["$mgr", ""]}, then : "없음", else:"$mgr"}
+...           }
+...     }
+...   }
+... ])
+
+
+
+
+==============집계 함수========================================
+
+-- Q1.사원 테이블의 봉급을 이용해서 집계함수를 출력 해보자.
+select max(sal) 최대 월급, min(sal) 최소월급, sum(sal) 총합, avg(sal) 평균월급, count(*)사원수
+from emp;
+
+db.emp.aggregate([
+ {
+   $group:{
+         _id: null, 
+        '최대 월급' : {$max : "$sal"},  //최대 월급(필드)- 이런식으로 공백있을 땐  ' ' 명시, value는 " "
+        최소월급 : {$min : "$sal"}, 
+        총합 : {$sum : "$sal"},  
+        '평균 월급' : {$avg : "$sal"},
+        '사원 수' : {$count: {}}  // $sum : 1
+    }
+ },
+  {$project : {_id:0}}
+])
+
+
+
+-- Q2 사원테이블에서 부서 번호가 10번인 사원의 평균 월급을 구해보자.
+select avg(sal)
+from emp
+where deptno = 10;
+
+db.emp.aggregate([
+   {  $match : { deptno : 10 } }, //1.매치
+   {  $group : {  _id:"부서10",
+                           '평균월급' : {$avg : "$sal"}, //2.그룹                  
+                        }      
+    },
+   {  $project : { _id:0, 부서: "$_id", 평균월급: 1 }  } //출력 부서 :  _id값 가지고 옴
+])
+
+
+
+-- Q3  사원테이블에서 부서 번호가 10,30번인 사원의 월급의 합을 구하자.
+
+select avg(sal)
+from emp
+where deptno in (10,30);
+
+db.emp.aggregate([
+   { 
+       $match : { deptno : {$in : [10,30] } } }, 
+   { 
+       $group : {  _id:"10_30_hap",
+                         '월급합' : {$sum : "$sal"},                   
+      }      
+    },
+   {  $project : { _id:0, 부서: "$_id", '월급합': 1 }  } 
+])
+
+
+
+-- Q4  직업이 세일즈맨인 사원의 평균 월급과 월급의 합을 구해보자.
+
+db.emp.aggregate([
+   { 
+       $match : { job : "SALESMAN" }},
+   { 
+       $group : {  _id:"SALESMAN",
+	      평균월급: {$avg: "$sal" },
+                         월급합 : {$sum : "$sal"}                   
+      }      
+    },
+   {  $project : { _id:0, 직업:"$_id", 평균월급:1, 월급합: 1 }  } 
+])
+
+
+
+
+-- Q5  봉급이  3000 이상 5000 이하의 월급을 몇명이 받는지 개수를 출력해보자.
+
+
+================그룹화 및 집계===============================================
+
+-- Q1. 부서별 평균 월급을 구하자.
+-- Q2.  직업별 평균 월급을 구하자.
+-- Q3.  부서별 평균 월급을 구하되 10번 부서의 평균 월급만 출력하자.
+-- Q4. 직업별 월급의 합을 구하자
+-- Q5.직업이 SALESMAN인 사원의 월급의 합을 구하라.
+-- Q6. 사원 테이블에서 사원의 최대 월급을 출력하자.
+-- Q7. 사원테이블에서 사원 최소 월급을 출력하자.
+-- Q8. 각 부서별 최대 월급을 출력하자.
+-- Q9. 사원 테이블에서 커미션이 책정되어 있는 사원의 이름과 커미션을 출력하라
+-- Q10. 사원 테이블에서 커미션이 책정되지 않은 사원의 이름과 커미션을 출력하라.
+
+
+
+
+
+
+
+
+
+
+
+
