@@ -1,0 +1,193 @@
+  1. fs.chunks   :  파일의 실제 데이터를 청크(작은단위)로  저장하는 곳  
+              <주요필드>       
+                       _id , 
+                       files_id: ObjectId('671064b52d9b35f0c6f5a850')  ->   fs.files 컬렉션의 _id 
+                        n (청크의 순서 0) _파일을 병합할때 사용,  
+                       data :  실제 파일 데이터가 저장된 필드  
+  
+   2. fs.files    :  파일의 메타정보  _크기,업로드 날짜, 파일유형, 파일명등 
+    <주요필드  >
+     _id: ObjectId('671064b52d9b35f0c6f5a850'),
+    length: Long('313'),
+    chunkSize: 261120, _ (기본값은  255kb)  
+    uploadDate: ISODate('2024-10-17T01:13:26.055Z'),
+    filename: 'a.txt',
+    metadata: { 파일과 관련된 추가 메타 데이터(선택적)  }
+       
+  3. GridFS 작동 방식 
+                  
+   3-1) GridFs 업로드 작동방식   :  
+           fs.files: 파일에 대한 메타데이터 저장
+          fs.chunks: 파일 내용을 일정 크기로 나누어 저장
+
+   3-2)  GridFs 다운로드  작동방식  : 파일이 다운로드 될때 , fs.files의 메타 데이터를 바탕으로  해당 파일의 
+    청크들을 fs.chunks에서 순서대로 불러와 파일을 다시 병합 한 다음 리턴한다.
+
+   3-3)  data: Binary.createFromBase64() -> 바이너리 데이터를 문자열로 관리하는 객체
+
+const bin = Binary.createFromBase64("-------------"); //프로세싱
+
+db.test.insert({
+	           name: "apple.jpg",
+                              data: Binary.createFromBase64()
+                           })
+
+클라이언트가 파일 업로드 -> 관리어떻게?
+springLab01
+              /img
+                  -.jpg   img폴더에 업로드 할 수 있게함  - 내 pc에 이미지가 있음 - 
+	1. 이미지들을 db에 저장	
+	2. 이미지 개수가 많을경우, 몽고에 넣기
+==========================================================================
+
+Q1) 도움말 확인을 해보자.
+D:\myWork\mymongo\Lab03> mongofiles --help
+
+Q2) 파일 업로드
+D:\myWork\mymongo\Lab03> mongofiles --db myFile put a.txt      (db는 몽고)
+
+Q3) 사과 이미지 업로드 한 후 내용을 확인하자.
+D:\myWork\mymongo\Lab03> mongofiles --db myFile put apple.jpg
+
+Q4) 파일 목록을 확인해보자.
+D:\myWork\mymongo\Lab03>mongofiles --db myFile list
+
+Q5) 파일을 다운로드 받아보자.	파일 이름을 변경해서 다운로드 받아보자.
+D:\myWork\mymongo\Lab03>mkdir res
+D:\myWork\mymongo\Lab03>mongofiles --db myFile get a.txt --local res/a.txt
+D:\myWork\mymongo\Lab03>mongofiles --db myFile get a.txt --local res/b.txt
+D:\myWork\mymongo\Lab03>mongofiles --db myFile get a.txt --local res/c.txt
+
+D:\myWork\mymongo\Lab03\res>cd ..
+D:\myWork\mymongo\Lab03>mkdir res02
+D:\myWork\mymongo\Lab03>cd res02
+D:\myWork\mymongo\Lab03\res02>mongofiles --db myFile get a.txt
+
+-> 현재 디렉토리에서 다운 받으면 --local명시하지 않아도 됨
+
+
+Q6) myFile에 있는 파일들을 get으로 한꺼번에 다운로드 받아보자.
+D:\myWork\mymongo\Lab03>mkdir res02
+D:\myWork\mymongo\Lab03\res02> mongofiles --db myFile get a.txt apple.jpg
+
+Q7) put으로 a.txt apple.jpg 을 다중 업로드 한 다음 몽고에서 컬렉션을 확인 해보자.
+C -> D:\myWork\mymongo\Lab03> mongofiles --db myFile put a.txt apple.jpg
+S ->  myFile> db.fs.files.find({}).itcount()  -> 추가 인덱스를 가진 문서가 생성됨.
+         myFile> db.fs.chunks.find({}).itcount()
+
+Q8) 여러 파일을 업로드 해보자.
+쉘
+D:\myWork\mymongo\Lab03> for %f in (*.txt *.jpg) do mongofiles --db myFile put %f
+
+파워 쉘
+Get-Childltem *.txt | ForEach-Object { mongofiles --db myFile put $_.Name }
+
+맥
+for f in  *.txt *.jgp; do
+mongofiles --db myFile put "$f"
+done
+
+Q9) 삭제를 해보자
+delete <filename> : Delete the specified file from GridFS storage.
+D:\myWork\mymongo\Lab03> mongofiles --db myFile delete a.txt apple.jpg    -- X 여러개 안됨 
+D:\myWork\mymongo\Lab03> mongofiles --db myFile delete a.txt    -- O파일 하나만 삭제 가능
+
+
+Q10) 쉘 프로그램으로 삭제 해보자. 2개를 찾아서 삭제해보자. 
+D:\myWork\mymongo\Lab03> for %f in (apple.jpg banana.jpg) do mongofiles --db myFile delete %f
+
+맥&리눅스
+for f in apple.jpg banana.jpg; do
+mongofile --db myFile delete "$f"
+done
+
+delete_id "<_id>"
+
+=============================================================================
+        list      - list all files; 'filename' is an optional prefix which listed filenames must begin with
+        search    - search all files; 'filename' is a regex which listed filenames must match
+        put       - add files with filenames specified in the supporting arguments
+        put_id    - add a file with filename 'filename' and a given '_id'
+        get       - get files with filenames specified in the supporting arguments
+        get_id    - get a file with the given '_id'
+        get_regex - get files matching the supplied 'regex'
+        delete    - delete all files with filename 'filename'
+        delete_id - delete a file with the given '_id'
+=============================================================================
+Q11) put_id 를 활용해보자. 
+a.txt		a0001
+apple.jpg		a0002
+banana.jpg	a0003의 ID로 업로드 해보자.
+
+D:\myWork\mymongo\Lab03> mongofiles --db myFile put_id a.txt		 a0001
+D:\myWork\mymongo\Lab03> mongofiles --db myFile put_id apple.jpg	 a0002
+D:\myWork\mymongo\Lab03> mongofiles --db myFile put_id banana.jpg	 a0003
+
+Q12) get_id를 활용해서 다운로드 res/a_download.txt   res/apple_download.jpg    res/banana_download.jpg 
+
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_id a0001 --local res/a_download.txt
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_id a0002 --local res/apple_download.jpg
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_id a0002 --local  res/banana_download.jpg
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_id a0002 --local  res/banana_download.png
+
+
+Q13) mydb의 파일을 delete_id로 삭제해보자.
+
+D:\myWork\mymongo\Lab03> mongofiles --db myFile delete_id a0001		
+D:\myWork\mymongo\Lab03> mongofiles --db myFile delete_id a0002
+D:\myWork\mymongo\Lab03> mongofiles --db myFile delete_id a0003 
+
+Q14)  search    - search all files; 'filename' is a regex which listed filenames must match
+            get_regex - get files matching the supplied 'regex'
+
+D:\myWork\mymongo\Lab03> mongofiles --db myFile search *.*
+D:\myWork\mymongo\Lab03> mongofiles --db myFile search a.txt
+D:\myWork\mymongo\Lab03>mongofiles --db myFile search "^a.*\.jpg"
+		^a	a로 시작하는
+		.*	모든 문자
+		\.jpg	.jpg로 끝나는 것
+
+
+Q15) get_regex 명령으로 파일 찾아서 res.png로 다운로드 받아보자.
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_regex "^a.*\.jpg" --local res.jpg     --X (여러개 찾아서 하나의 이름으로 리턴 못하기에)
+
+D:\myWork\mymongo\Lab03> mongofiles --db myFile get_regex "^a.*\.jpg"                                  --O
+
+============================================================================
+mongoimport mongoexport
+
+Q1. Score  컬렉션을 myscore.json으로 다운받자
+D:\myWork\mymongo\Lab03>> mongoexport  --db myemp  -c Score   --out myscore.json
+ ( -c : collection, --out : $out (필드, 파일이름)
+{"_id" {"$oid":"684a69625beead518750eb67"},"name":"aaa","kor":90,"eng":80,"mat":98,"test":"midterm"}
+
+
+D:\myWork\mymongo\Lab03>>type myscore.json
+==> mac cat myscore.json
+
+
+Q2. newdb라는 db에   Uscore라는 컬렉션으로  myscore.json 를 업로드 하자.
+mongoimport  --db newdb  -c Uscore   --file  myscore.json
+
+Q3. Q2에서 임포트 한것을 다시  myscore_res.json으로 export  하자
+    mongoexport  --db newdb  -c Uscore   --out myscore_res.json 
+
+Q4. newdb라는 db에   Uscore을   myscore.csv로 다운로드 받자 --type=csv
+mongoexport  --db newdb  -c Uscore   --out myscore.csv
+
+파일은 생성되고  문서( 내용)은 --fields 옵션이 필수로   실행오류
+mongoexport  --db newdb  -c Uscore  --type=csv   --out myscore01.csv     X
+
+mongoexport  --db newdb  -c Uscore --type=csv --fields name,eng,mat --out myscore1.csv     O
+csv타입은 반드시 fields를 명시
+
+
+Q5. myscore1.csv에서 이름과 영어만 newdb에 MScore로 업로드해보자.
+mongoimport  --db newdb  -c MScore --type=csv --fields name,eng --file myscore01.csv
+
+
+Q6. doc 샘플파일을 import해보자.   (file.csv)
+mongoimport --db newdb --collection=contacts --type=csv    --columnsHaveTypes    --fields="myname.string(),birthdate.date(2006-01-02),contacted.boolean(),myint.int32(),thumbnail.binary(base64)"  --file=file.csv
+
+=> string, date, boolean, .. 자바스크립트 객체
+

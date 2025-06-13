@@ -1,0 +1,22 @@
+use admin 
+var config = { 
+_id: 'CRS', 
+members: [ 
+{ _id: 0, host: 'localhost:27011' }, 
+{ _id: 1, host: 'localhost:27012' }, 
+{ _id: 2, host: 'localhost:27013' } 
+] 
+}; 
+rs.initiate(config); 
+rs.status(); 
+
+====================================
+user blog
+for(var i = 1001; i < 100000; i++){
+     var user ={
+                          userId: i,
+                         name: "userName"+i,
+                         createAt: new Date().getTime()
+                        }
+     db.user.insertOne(user);	
+}
