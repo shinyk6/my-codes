@@ -1,0 +1,70 @@
+use admin
+rs.initiate({
+  _id: "RS2",
+  members: [
+    { _id: 0, host: "localhost:27040" },
+    { _id: 1, host: "localhost:27041" },
+    { id: 2, host: "localhost:27042" }
+  ]
+})
+
+
+sh.addShard("RS2/localhost:27040,localhost:27041,localhost:27042")
+
+1) 1000접속
+2) sh.getBalancerState()
+3) sh.getBalancerState(true)
+4) db.printShardingStatus(true)
+5)sh.status() 
+
+sh.enableSharding("blog") - DB에 샤딩 활성화
+db.user.createIndex( { userId: 1 } ) - shard key에 대한 인덱스 반드시 필요
+shard key가 인덱스 되어 있어야 샤딩 가능 . 
+sh.shardCollection("blog.user", { userId: 1 }) - 컬렉션에 샤드키 설정
+실제로 이 컬렉션을 샤딩 대상으로 등록하는 명령어
+이걸해야 splitAt(), moveChunck()등 chunck관련 명령어 작동 가능
+
+=> 이 셋은 한번만 하면 됨 (초기설정)
+ 
+--- 청크 명시 이동   논리 
+sh.splitAt("blog.user", {userId: 100000})
+
+--- 청크를 다른 샤드로 이동   물리 (min: 100000인 청크가 대상)
+sh.moveChunk("blog.user", { userId: 100000 }, "RS2")
+db.printShardingStatus(true)
+
+ -moveChunk 진행상태 
+db.currentOp({ "desc": /^moveChunk/ })
+
+
+--샤드 키 확인
+sh.enableSharding()
+sh.shardCollection("blog.user", {userId: 1})
+
+--청크 사이즈 변경
+db.settings.updateOne( 
+     { _id: "chunksize" }, 
+     { $set: { value: 32 } }, 
+     { upsert: true })
+)
+
+
+--제자리로 (원래 위치로)
+sh.moveChunk("blog.user", {userId: 100000}, "RS")
+
+--RS2로 일부 청크를 수동으로 이동
+sh.moveChunk("blog.user", {userId: 300000}, "RS")
+sh.moveChunk("blog.user", {userId: 350000}, "RS")
+sh.moveChunk("blog.user", {userId: 370000}, "RS")
+
+--자동으로
+sh.startBalancer()     
+
+--청크 개수 확인
+db.chunks.aggregate([
+   { $group: { _id: "$ns", count: { $sum: 1 } } }
+ ])
+
+
+--청크 이동 로그를 확인 하고 what필드와 값으로 내용을 확인 -> 청크 이동 로그 저장된 내용
+db.changelog.find({what: "moveChunk.commit"}).pretty()

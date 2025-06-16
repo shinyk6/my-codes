@@ -1,0 +1,107 @@
+인덱스  -> 문서를 빨리 찾는 기능 설정 -> 읽기 속도 증가 -> 정렬기준이 되는 필드에 인덱스를 지정
+1)인덱스 확인, db.Score.getIndexes() : 현재 컬렉션의 인덱스를 확인한다.
+
+2) 단일 인덱스 생성, db.Score.createIndex({ name: 1 }) : name 필드에 대해 오름차순 인덱스를 생성한다.
+
+3) 인덱스 삭제, db.Score.dropIndex("name_1") : name 인덱스를 삭제한다 (_id 인덱스는 삭제 불가).
+
+4) 복합 인덱스 생성, db.Score.createIndex({ name: 1, eng: -1 }) : name과 eng 필드에 대한 복합 인덱스를 생성한다.
+
+5) 복합 인덱스 사용, db.Score.find({ name: "aaa" }) : 복합 인덱스의 첫 번째 필드(name)만 사용한 쿼리를 수행한다.
+
+6) 복합 인덱스 전체 사용, db.Score.find({ name: "bbb", eng: { $gte: 80 } }) : 복합 인덱스를 두 필드 모두 사용하는 쿼리를 수행한다.
+
+7) 복합 인덱스 정렬 포함 사용, db.Score.find({ name: "bbb" }).sort({ eng: -1 }) : 인덱스를 사용하여 name으로 필터링, eng로 정렬한다.
+
+8) 복합 인덱스 삭제, db.Score.dropIndex("name_1_eng_-1") : 복합 인덱스를 삭제한다.
+
+9) 인덱스 사용 통계 확인, db.Score.aggregate([{ $indexStats: {} }]) : 각 인덱스의 사용 횟수와 시점을 확인한다.
+
+10) 실행 계획 확인, db.Score.find().explain("executionStats") : 쿼리의 실행 성능과 인덱스 사용 여부를 분석한다.
+
+11) 컬렉션 통계 확인, db.runCommand({ collStats: "Score" }) : 컬렉션의 문서 수, 용량, 인덱스 크기 등을 확인한다.
+
+======================== exam ================================================
+ Q1. mydb의 Score 컬렉션의 인덱스를 확인 해보자.   
+     mydb> db.Score.getIndexes()
+   [ { v: 2,               인덱스 버전  
+       key: { _id: 1 },   id 키 오름차순  
+       name: '_id_' } ] 인덱스 이름  
+
+ Q2. mydb의 Score 컬렉션의 인덱스를  name으로 변경[추가] 확인 해보자.   
+    - _id 인덱스는 삭제 할 수 없다.      
+mydb> db.Score.createIndex({name : 1})   오름 차순 인덱스를 생성하겠다.  
+name_1   == 인덱스  이름생성으로  리턴
+mydb> db.Score.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: 1 }, name: 'name_1' }
+
+Q3. 인덱스 삭제 후 확인  
+mydb> db.Score.dropIndex("name_1")
+{ nIndexesWas: 2, ok: 1 }
+mydb>
+mydb> db.Score.getIndexes()
+[ { v: 2, key: { _id: 1 }, name: '_id_' } ]
+
+
+Q4. 복합인덱스를 만들어 보자  이름, 영어 
+mydb> db.Score.createIndex({name : 1, eng : -1 }) 
+	name_1_eng_-1
+
+mydb> db.Score.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: 1, eng: -1 }, name: 'name_1_eng_-1' }
+]
+
+Q5. 복합 인덱스 확인 해보자.  
+  1) name필드 만 사용해보자.  
+  db.Score.find({name:"aaa"}).sort({eng:-1}).explain("executionStats")
+  
+  2) name, eng 필드 모두 확인  
+   db.Score.find({name:"bbb", eng :{$gte:80}  }).explain("executionStats") 
+
+  3)  name필드 정렬하고 eng 필드로 검색  
+   db.Score.find({name:"bbb" }).sort({eng:-1}).explain("executionStats") 
+
+
+Q6. 복합 인덱스 삭제 후 확인 해보자.  -> 필드가 자주 변경될때   / 인덱스 남용 /  첫번째 필드를 사용하지 않는 쿼리  
+mydb> db.Score.dropIndex("name_1_eng_-1")
+db.Score.aggregate( [ { $indexStats: { } } ] )
+mydb> db.Score.aggregate( [ { $indexStats: { } } ] )
+[
+  {
+    name: '_id_',
+    key: { _id: 1 },
+    host: 'Dominica:27017',
+    accesses: { ops: Long('0'),   // 인덱스 작업횟수  
+                  since: ISODate('2025-06-16T09:03:09.431Z') },  // 통계치 내기위한 정보  
+    spec: { v: 2, key: { _id: 1 }, name: '_id_' }
+  },
+  {
+    name: 'name_1_eng_-1',
+    key: { name: 1, eng: -1 },
+    host: 'Dominica:27017',
+    accesses: { ops: Long('3'), since: ISODate('2025-06-16T00:41:17.898Z') },  ---> 조회횟수 / 최적화 횟수
+    spec: { v: 2, key: { name: 1, eng: -1 }, name: 'name_1_eng_-1' }
+  }
+]
+
+Q7.쿼리에서 실행 결과 확인  
+db.Score.find().explain("executionStats")
+
+
+Q8. 복합키를 지정한 후에 앞에 필드 사용하지 않고,  하나의 필드로만 find()해보자.  <주의할 점- 인덱스사용하지않음 -> 비효율> 
+
+db.Score.createIndex({name : 1, eng : -1 }) 
+db.Score.find({name:"bbb" }).explain("executionStats")  stage: 'FETCH',
+    totalKeysExamined: 1,  -> 인덱스 사용 
+    totalDocsExamined: 1,  -> 인덱스에 해당하는 스캔1
+	
+	
+db.Score.find({eng:100 }).explain("executionStats")  stage: 'COLLSCAN',        -> 컬렉션 전체 스캔했다. 인덱스 사용X!!
+    totalKeysExamined: 0,   ->인덱스 사용하지 않고
+    totalDocsExamined: 7,   ->전체 스캔
+
+
