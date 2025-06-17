@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/myemp  # MongoDB 연결 주소 (myemp 데이터베이스 사용)
+  application:
+    name: SpringBootLab10                   # Spring Boot 애플리케이션 이름
+
+server:
+  port: 8080                                # 서버 포트 (기본 8080)
+
+google:
+  map:
+    api-key: AIzaSyC1zjqNgZCEJAMpbbtstqChzII3ObriBqw  # Google Maps API 키
