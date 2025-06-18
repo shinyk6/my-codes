@@ -13,6 +13,7 @@ import com.lab10.domain.Emp;
 import com.lab10.service.DeptService;
 import com.lab10.service.EmpService;
 
+//단일 부서 조회와 해당 부서에 대한 사원 상세페이지
 @Controller
 public class DeptPageController {
  
@@ -22,7 +23,7 @@ public class DeptPageController {
 	@Autowired
 	private EmpService empService;
 	
-
+	
 	@GetMapping("/dept/view/{deptno}") 
 	public String showDetail(@PathVariable int deptno, Model model) {
 		//부서 번호로 단일 부서 조회

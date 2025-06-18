@@ -12,6 +12,7 @@ import com.lab10.repository.EmpRepository;
 @Service
 public class EmpService {
 
+	// 생성자 주입
 	private EmpRepository empRepository;
 	
 	public EmpService(EmpRepository empRepository) {
@@ -30,6 +31,7 @@ public class EmpService {
 	
 	// 3. 사번으로 단일 사원 조회
 	public Emp findByEmpno(int empno) {
+		//findById는 Optional을 반환하므로 orElse(null)등을 사용하여 처리
 		return empRepository.findById(empno).orElse(null);
 	}
 	
@@ -40,6 +42,7 @@ public class EmpService {
 	
 	// 5. 이름에 특정 키워드가 포함된 사원 목록 조회
 	public List<Emp> searchByName(String keyword){
+		//Repository에 findByEnameContaining과 같은 메소드가 있다고 가정
 		return empRepository.findByEnameContaining(keyword);
 	}
 	
@@ -51,6 +54,7 @@ public class EmpService {
 
 	// 7. 부서번호로 해당 부서의 사원 목록 조회
 	public List<Emp> findByDeptno(int deptno){
+		// Repository에 findByDept와 같은 메소드가 있다고 가정 (Emp엔티티의 dept필드 기준)
 		return empRepository.findByDept(deptno);
 	}
 	
