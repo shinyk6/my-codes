@@ -54,6 +54,7 @@ out/
 .project
 .classpath
 .settings/
+.yml
 
 
 # node
