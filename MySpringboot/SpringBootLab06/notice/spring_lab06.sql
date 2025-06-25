@@ -1,5 +1,6 @@
 -- 데이터베이스 생성 및 사용
-CREATE DATABASE IF NOT EXISTS spring_lab06;
+DROP DATABASE spring_lab06;
+CREATE DATABASE spring_lab06 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE spring_lab06;
 
 -- 학생 테이블
@@ -8,8 +9,6 @@ CREATE TABLE student (
     name VARCHAR(100) NOT NULL
 );
 
-select * from student;
-select * from course;
 
 -- 강의 테이블 
 CREATE TABLE course (
@@ -34,9 +33,7 @@ INSERT INTO student (name) VALUES
 ('최길동'),
 ('박길동');
 
-delete from student;
-delete from course;
-delete from student_course;
+
 --  강의 데이터 
 INSERT INTO course (title) VALUES
 ('자바 프로그래밍'),
@@ -62,3 +59,5 @@ INSERT INTO student_course (student_id, course_id) VALUES
 (5, 2), -- 박길동 - 웹 개발
 (5, 3), -- 박길동 - 데이터베이스 설계
 (5, 4); -- 박길동 - 스프링 부트
+
+
