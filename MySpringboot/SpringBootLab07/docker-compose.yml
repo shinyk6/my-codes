@@ -6,7 +6,7 @@ services:
     container_name: mysql-container02 
     environment: 
       MYSQL_ROOT_PASSWORD: admin1234 
-      MYSQL_DATABASE: spring_lab07 
+      MYSQL_DATABASE: spring_lab06
     ports: 
       - "3306:3306" 
     volumes: 
@@ -26,7 +26,7 @@ services:
       - spring-net 
     environment: 
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/spring_lab06?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul 
-      SPRING_DATASOURCE_USERNAME: root 
+      SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: admin1234 
  
 volumes: 
