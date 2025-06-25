@@ -3,10 +3,10 @@ version: '3.8'
 services: 
   mysql: 
     image: mysql:8 
-    container_name: mysql-container 
+    container_name: mysql-container02 
     environment: 
       MYSQL_ROOT_PASSWORD: admin1234 
-      MYSQL_DATABASE: spring_lab06 
+      MYSQL_DATABASE: spring_lab07 
     ports: 
       - "3306:3306" 
     volumes: 
@@ -16,7 +16,7 @@ services:
  
   springlab06: 
     build: . 
-    image: mylab06 #이미지 이름 명시
+    image: mylab07 #이미지 이름 명시
     container_name: springlab07-app 
     ports: 
       - "8080:8080" 
