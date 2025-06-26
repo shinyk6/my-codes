@@ -13,6 +13,7 @@
 !/code-tests/
 !/mymongo/
 !/Linux/
+!/docker_lab06/
 !.gitignore
 !README.md
 
